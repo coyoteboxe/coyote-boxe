@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#ff4500">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Camp Metalico</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#121212;--s:#1e1e1e;--s2:#2a2a2a;
+  --acc:#ff4500;--acc2:#ff6a00;
+  --txt:#f0f0f0;--txt2:#a0a0a0;
+  --grn:#00e676;--blu:#2979ff;--yel:#ffea00;--red:#ff1744;
+  --r:12px
+}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+header{background:linear-gradient(135deg,#1a0a00,#2d0d00);border-bottom:2px solid var(--acc);padding:14px 18px;display:flex;align-items:center;gap:12px}
+header h1{font-size:1.3rem;font-weight:900;letter-spacing:2px;color:var(--acc);text-shadow:0 0 20px rgba(255,69,0,.5)}
+header .sub{font-size:.65rem;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+nav{display:flex;background:var(--s);border-bottom:1px solid #333;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:1;min-width:72px;padding:13px 6px;border:none;background:transparent;color:var(--txt2);font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
+nav button.active{color:var(--acc);border-bottom-color:var(--acc);background:rgba(255,69,0,.07)}
+.tab{display:none;padding:18px 14px}
+.tab.active{display:block}
+
+/* ── TIMER ── */
+.tctr{max-width:400px;margin:0 auto;text-align:center}
+.wlabel{font-size:.7rem;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.wsel{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.wbtn{flex:1;padding:11px 8px;border-radius:var(--r);border:2px solid #444;background:var(--s2);color:var(--txt2);font-size:.8rem;font-weight:700;cursor:pointer;transition:.2s;line-height:1.4}
+.wbtn small{font-size:.65rem;font-weight:400;display:block}
+.wbtn.wn{border-color:var(--grn);color:var(--grn);background:rgba(0,230,118,.07)}
+.wbtn.wc{border-color:var(--red);color:var(--red);background:rgba(255,23,68,.07)}
+.rinfo{font-size:1rem;font-weight:700;color:var(--txt2);margin-bottom:14px}
+.rinfo span{color:var(--yel);font-size:1.3rem}
+.rdots{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+.rdot{width:13px;height:13px;border-radius:50%;background:var(--s2);border:2px solid #444;transition:.3s}
+.rdot.done{background:var(--grn);border-color:var(--grn)}
+.rdot.cur{background:var(--acc);border-color:var(--acc);transform:scale(1.35)}
+.tdisp{position:relative;margin:0 auto 22px;width:230px;height:230px}
+.tsvg{width:230px;height:230px;transform:rotate(-90deg)}
+.tbg{fill:none;stroke:var(--s2);stroke-width:14}
+.tprog{fill:none;stroke:var(--acc);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1s linear,stroke .3s}
+.tprog.rest{stroke:var(--blu)}
+.tinner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ttime{font-size:3rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.tphase{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:5px;color:var(--acc)}
+.tphase.rest{color:var(--blu)}
+.tctrl{display:flex;gap:10px;justify-content:center;margin-bottom:18px}
+.blg{padding:17px 28px;border-radius:var(--r);border:none;font-size:.95rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:.15s;-webkit-tap-highlight-color:transparent}
+.blg:active{transform:scale(.95)}
+.bstart{background:var(--acc);color:#fff;flex:2}
+.breset{background:var(--s2);color:var(--txt2);flex:1}
+.bskip{background:var(--s2);color:var(--yel);flex:1;font-size:.8rem}
+.pinfo{background:var(--s2);border-radius:var(--r);padding:12px;font-size:.78rem}
+.pinfo p{color:var(--txt2);margin-bottom:3px;text-transform:uppercase;font-size:.65rem;letter-spacing:1px}
+.pinfo strong{color:var(--acc)}
+
+/* ── TABLES ── */
+.stitle{font-size:1rem;font-weight:900;color:var(--acc);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;padding-bottom:7px;border-bottom:2px solid var(--acc)}
+.tscroll{overflow-x:auto;border-radius:var(--r);margin-bottom:28px}
+table{width:100%;border-collapse:collapse;font-size:.8rem;min-width:300px}
+thead{background:linear-gradient(135deg,#2d0d00,#1a0a00)}
+thead th{padding:11px 9px;text-align:left;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--acc);border-bottom:2px solid var(--acc)}
+tbody tr{border-bottom:1px solid #272727;transition:background .15s}
+tbody tr:hover{background:rgba(255,69,0,.04)}
+td{padding:7px 9px;vertical-align:middle}
+.bk{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.63rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.bt{background:rgba(0,230,118,.13);color:var(--grn);border:1px solid var(--grn)}
+.bv{background:rgba(41,121,255,.13);color:var(--blu);border:1px solid var(--blu)}
+.bp{background:rgba(255,23,68,.13);color:var(--red);border:1px solid var(--red)}
+.bn5{background:rgba(255,23,68,.18);color:#ff8a80}
+.bn4{background:rgba(255,152,0,.18);color:#ffcc80}
+.bn3{background:rgba(255,235,59,.18);color:#fff59d}
+.bn2{background:rgba(100,221,23,.18);color:#b9f6ca}
+.bn1{background:rgba(100,181,246,.18);color:#bbdefb}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.ccard{background:var(--s);border-radius:var(--r);padding:13px 9px;text-align:center;border:1px solid #333}
+.ccard .ico{font-size:1.7rem;margin-bottom:5px}
+.ccard .nm{font-size:.72rem;font-weight:700;margin-bottom:3px}
+.ccard .dt{font-size:.62rem;color:var(--txt2)}
+
+/* ── LOG ── */
+.lform{background:var(--s);border-radius:var(--r);padding:18px;margin-bottom:18px}
+.lform label{display:block;font-size:.68rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.lform input,.lform select,.lform textarea{width:100%;padding:11px;border-radius:8px;border:1px solid #444;background:var(--s2);color:var(--txt);font-size:.88rem;margin-bottom:14px}
+.lform textarea{min-height:75px;resize:vertical}
+.bexp{width:100%;padding:17px;border-radius:var(--r);border:none;font-size:.95rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;transition:.2s}
+.bexp:active{opacity:.8;transform:scale(.98)}
+.bexp.main{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
+.bexp.sec{background:linear-gradient(135deg,#1a3a6b,#0d2450);color:#fff}
+.bclr{width:100%;padding:13px;border-radius:var(--r);border:2px solid #444;background:transparent;color:var(--txt2);font-size:.82rem;font-weight:700;cursor:pointer}
+.lhist{background:var(--s);border-radius:var(--r);padding:14px;max-height:300px;overflow-y:auto;margin-top:18px}
+.lentry{border-bottom:1px solid #333;padding:10px 0;font-size:.8rem}
+.lentry:last-child{border-bottom:none}
+.ledate{color:var(--acc);font-weight:700;font-size:.72rem}
+.letype{color:var(--yel);font-size:.68rem;text-transform:uppercase;letter-spacing:1px}
+.empty{color:var(--txt2);text-align:center;padding:20px;font-size:.82rem}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--s2);color:var(--txt);padding:11px 22px;border-radius:30px;font-size:.82rem;font-weight:600;border:1px solid var(--acc);transition:transform .3s;z-index:999;white-space:nowrap}
+.toast.on{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <span style="font-size:1.9rem">&#x1F94A;</span>
+  <div>
+    <h1>CAMP METALICO</h1>
+    <div class="sub">Diario de Treino &bull; PWA Offline</div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('timer',this)">&#x23F1; Timer</button>
+  <button onclick="showTab('tec',this)">&#x1F3AF; Tecnico</button>
+  <button onclick="showTab('fis',this)">&#x1F4AA; Fisico</button>
+  <button onclick="showTab('log',this)">&#x1F4CB; Log</button>
+</nav>
+
+<!-- ════════════ TIMER ════════════ -->
+<div id="tab-timer" class="tab active">
+<div class="tctr">
+  <div class="wlabel">Tipo de Semana</div>
+  <div class="wsel">
+    <button class="wbtn wn" id="btn-n" onclick="setWeek('normal')">Normal<small>4 rounds padrao</small></button>
+    <button class="wbtn" id="btn-c" onclick="setWeek('choque')">Choque / Overload<small>6 rounds automatico</small></button>
+  </div>
+
+  <div class="rinfo">Round <span id="cr">1</span> de <span id="tr">4</span></div>
+  <div class="rdots" id="dots"></div>
+
+  <div class="tdisp">
+    <svg class="tsvg" viewBox="0 0 230 230">
+      <circle class="tbg" cx="115" cy="115" r="100"/>
+      <circle class="tprog" id="tcirc" cx="115" cy="115" r="100"/>
+    </svg>
+    <div class="tinner">
+      <div class="ttime" id="tdisp">3:00</div>
+      <div class="tphase" id="tph">COMBATE</div>
+    </div>
+  </div>
+
+  <div class="tctrl">
+    <button class="blg breset" onclick="resetT()">&#x21BA;</button>
+    <button class="blg bstart" id="sbtn" onclick="toggleT()">INICIAR</button>
+    <button class="blg bskip" onclick="skipP()">SKIP &#x23ED;</button>
+  </div>
+
+  <div class="pinfo">
+    <p>Padrao do round (3 min)</p>
+    <strong>Min 1: Tecnico &rarr; Min 2: Volume &rarr; Min 3: Pressao / Temporalgia</strong>
+  </div>
+</div>
+</div>
+
+<!-- ════════════ TECNICO ════════════ -->
+<div id="tab-tec" class="tab">
+  <div class="stitle">Treino Tecnico &mdash; 17h00 as 19h00</div>
+  <p style="font-size:.78rem;color:var(--txt2);margin-bottom:14px">
+    Ciclo de 3 min por round &bull;
+    <span style="color:var(--grn)">1&ordm; min: Tecnico</span> &rarr;
+    <span style="color:var(--blu)">2&ordm; min: Volume</span> &rarr;
+    <span style="color:var(--red)">3&ordm; min: Pressao/Temporalgia</span>
+    &bull; 40 ciclos completos
+  </p>
+  <div class="tscroll">
+    <table>
+      <thead><tr>
+        <th style="width:46px">Min</th>
+        <th style="width:62px">Hora</th>
+        <th style="width:100px">Fase</th>
+        <th>Foco</th>
+      </tr></thead>
+      <tbody id="tbdy"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ FISICO ════════════ -->
+<div id="tab-fis" class="tab">
+  <div class="stitle">Complex Latico &mdash; Neural Decrescente</div>
+  <div class="tscroll">
+    <table>
+      <thead><tr>
+        <th style="width:28px">#</th>
+        <th>Exercicio</th>
+        <th style="width:70px">Neural</th>
+        <th style="width:52px">Vol.</th>
+        <th style="width:48px">Pausa</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">1</td>
+          <td><strong>Power Clean</strong><br><small style="color:var(--txt2)">Puxada explosiva do chao</small></td>
+          <td><span class="bk bn5">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>4&times;3</td><td>90s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">2</td>
+          <td><strong>Box Jump + Agachamento</strong><br><small style="color:var(--txt2)">Salto maximo, absorcao controlada</small></td>
+          <td><span class="bk bn5">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>4&times;5</td><td>75s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">3</td>
+          <td><strong>Thruster (Squat + Press)</strong><br><small style="color:var(--txt2)">Barra do agachamento ao overhead</small></td>
+          <td><span class="bk bn4">&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>3&times;6</td><td>60s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">4</td>
+          <td><strong>Terra Romeno (RDL)</strong><br><small style="color:var(--txt2)">Cadeia posterior, excentrico</small></td>
+          <td><span class="bk bn4">&#9733;&#9733;&#9733;&#9733;</span></td>
+          <td>3&times;8</td><td>60s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">5</td>
+          <td><strong>Remada Pendlay</strong><br><small style="color:var(--txt2)">Barra do chao, tronco paralelo</small></td>
+          <td><span class="bk bn3">&#9733;&#9733;&#9733;</span></td>
+          <td>3&times;8</td><td>45s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">6</td>
+          <td><strong>KB Swing Russo</strong><br><small style="color:var(--txt2)">Explosao de quadril, sem braco</small></td>
+          <td><span class="bk bn3">&#9733;&#9733;&#9733;</span></td>
+          <td>3&times;15</td><td>45s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">7</td>
+          <td><strong>Farmer's Carry</strong><br><small style="color:var(--txt2)">Caminhada com carga bilateral, 20m</small></td>
+          <td><span class="bk bn2">&#9733;&#9733;</span></td>
+          <td>4&times;20m</td><td>30s</td>
+        </tr>
+        <tr>
+          <td style="color:var(--acc);font-weight:900">8</td>
+          <td><strong>Battle Ropes</strong><br><small style="color:var(--txt2)">Ondas alternadas &mdash; maximo lactato</small></td>
+          <td><span class="bk bn1">&#9733;</span></td>
+          <td>4&times;20s</td><td>20s</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="stitle" style="margin-top:4px">Protocolo Cervical &mdash; Isometrico Seguro</div>
+  <p style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">
+    <strong style="color:var(--acc)">6 segundos</strong> cada &bull;
+    3 series &bull; Sem peso &bull; Sem dor &bull; Resistencia manual apenas
+  </p>
+  <div class="cgrid">
+    <div class="ccard"><div class="ico">&#x2B07;</div><div class="nm">Flexao Frontal</div><div class="dt">Mao na testa, resiste queda</div></div>
+    <div class="ccard"><div class="ico">&#x2B06;</div><div class="nm">Extensao</div><div class="dt">Mao na nuca, resiste recuo</div></div>
+    <div class="ccard"><div class="ico">&#x2B05;</div><div class="nm">Flex. Lateral Esq.</div><div class="dt">Mao na tempora esq.</div></div>
+    <div class="ccard"><div class="ico">&#x27A1;</div><div class="nm">Flex. Lateral Dir.</div><div class="dt">Mao na tempora dir.</div></div>
+    <div class="ccard"><div class="ico">&#x21AA;</div><div class="nm">Rotacao Esq.</div><div class="dt">Mao no queixo, resiste giro</div></div>
+    <div class="ccard"><div class="ico">&#x21A9;</div><div class="nm">Rotacao Dir.</div><div class="dt">Mao no queixo, resiste giro</div></div>
+  </div>
+</div>
+
+<!-- ════════════ LOG ════════════ -->
+<div id="tab-log" class="tab">
+  <div class="stitle">Registrar Treino</div>
+  <div class="lform">
+    <label>Data</label>
+    <input type="date" id="ld">
+    <label>Tipo de Semana</label>
+    <select id="lwt">
+      <option value="normal">Normal (4 rounds)</option>
+      <option value="choque">Choque / Overload (6 rounds)</option>
+    </select>
+    <label>Tipo de Treino</label>
+    <select id="ltt">
+      <option value="tecnico">Tecnico</option>
+      <option value="fisico">Fisico</option>
+      <option value="ambos">Ambos</option>
+      <option value="sparring">Sparring</option>
+    </select>
+    <label>Rounds Completados</label>
+    <input type="number" id="lrn" min="0" max="8" value="4">
+    <label>Observacoes / Fenomenos (Temporalgia, paraprocessamento...)</label>
+    <textarea id="lnotes" placeholder="Descreva os fenomenos observados durante o treino..."></textarea>
+    <label>Peso corporal (kg)</label>
+    <input type="number" id="lwg" step="0.1" placeholder="ex: 72.5">
+  </div>
+  <button class="bexp main" onclick="saveLog()">&#x1F4BE; SALVAR REGISTRO</button>
+  <button class="bexp sec" onclick="exportJSON()">&#x1F4E4; EXPORTAR JSON</button>
+  <button class="bclr" onclick="clearLogs()">&#x1F5D1; Limpar Historico</button>
+
+  <div class="stitle" style="margin-top:22px">Historico</div>
+  <div class="lhist" id="lhist"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── TAB NAV
+function showTab(n, b) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
+  document.getElementById('tab-' + n).classList.add('active');
+  b.classList.add('active');
+}
+
+// ── TOAST
+function toast(m) {
+  const el = document.getElementById('toast');
+  el.textContent = m;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+// ── TIMER ENGINE
+const C = 2 * Math.PI * 100;   // circumference for r=100
+let wk = 'normal', nRounds = 4, cur = 1;
+let running = false, combat = true, left = 180;
+let iv = null;
+const CT = 180, RT = 60;
+
+function setWeek(t) {
+  wk = t; nRounds = t === 'choque' ? 6 : 4;
+  document.getElementById('btn-n').className = 'wbtn' + (t === 'normal' ? ' wn' : '');
+  document.getElementById('btn-c').className = 'wbtn' + (t === 'choque' ? ' wc' : '');
+  resetT();
+}
+
+function dots() {
+  const el = document.getElementById('dots');
+  let h = '';
+  for (let i = 1; i <= nRounds; i++)
+    h += '<div class="rdot' + (i < cur ? ' done' : i === cur ? ' cur' : '') + '"></div>';
+  el.innerHTML = h;
+}
+
+function draw() {
+  const m = Math.floor(left / 60), s = left % 60;
+  document.getElementById('tdisp').textContent = m + ':' + String(s).padStart(2, '0');
+  const tot = combat ? CT : RT;
+  const off = C * (1 - left / tot);
+  const el = document.getElementById('tcirc');
+  el.style.strokeDasharray = C;
+  el.style.strokeDashoffset = off;
+  el.className = 'tprog' + (combat ? '' : ' rest');
+  const ph = document.getElementById('tph');
+  ph.textContent = combat ? 'COMBATE' : 'DESCANSO';
+  ph.className = 'tphase' + (combat ? '' : ' rest');
+  document.getElementById('cr').textContent = cur;
+  document.getElementById('tr').textContent = nRounds;
+  dots();
+}
+
+function toggleT() {
+  if (running) {
+    clearInterval(iv); running = false;
+    document.getElementById('sbtn').textContent = 'CONTINUAR';
+  } else {
+    running = true;
+    document.getElementById('sbtn').textContent = 'PAUSAR';
+    iv = setInterval(tick, 1000);
+  }
+}
+
+function tick() {
+  left--;
+  if (left < 0) {
+    vib();
+    if (combat) {
+      if (cur >= nRounds) {
+        clearInterval(iv); running = false;
+        document.getElementById('sbtn').textContent = 'CONCLUIDO';
+        toast('Treino concluido! ' + nRounds + ' rounds.');
+        left = 0; draw(); return;
+      }
+      combat = false; left = RT;
+    } else { cur++; combat = true; left = CT; }
+  }
+  draw();
+}
+
+function resetT() {
+  clearInterval(iv); running = false; combat = true; cur = 1; left = CT;
+  document.getElementById('sbtn').textContent = 'INICIAR';
+  draw();
+}
+
+function skipP() { left = 0; tick(); }
+
+function vib() { if (navigator.vibrate) navigator.vibrate([300, 100, 300]); }
+
+// ── TABELA TECNICA (120 minutos = 40 ciclos de 3)
+(function buildTec() {
+  const fases = [
+    { cls: 'bt', label: 'TECNICO',  foco: 'Gesto tecnico isolado — maxima precisao, sem fadiga acumulada' },
+    { cls: 'bv', label: 'VOLUME',   foco: 'Alta repeticao — manutencao do padrao motor sob volume' },
+    { cls: 'bp', label: 'PRESSAO',  foco: 'Temporalgia — manter tecnica sob pressao e estresse temporal' },
+  ];
+  let h = '';
+  for (let m = 0; m < 120; m++) {
+    const hh = Math.floor((17 * 60 + m) / 60);
+    const mm = (17 * 60 + m) % 60;
+    const f = fases[m % 3];
+    h += '<tr><td style="color:var(--txt2)">' + (m + 1) + '</td>' +
+         '<td style="color:var(--txt2)">' + String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + '</td>' +
+         '<td><span class="bk ' + f.cls + '">' + f.label + '</span></td>' +
+         '<td style="color:var(--txt2);font-size:.75rem">' + f.foco + '</td></tr>';
+  }
+  document.getElementById('tbdy').innerHTML = h;
+})();
+
+// ── LOG (localStorage)
+function getLogs() { try { return JSON.parse(localStorage.getItem('camp_logs') || '[]'); } catch { return []; } }
+function setLogs(l) { localStorage.setItem('camp_logs', JSON.stringify(l)); }
+
+function saveLog() {
+  const e = {
+    id: Date.now(),
+    date: document.getElementById('ld').value || new Date().toISOString().slice(0,10),
+    weekType: document.getElementById('lwt').value,
+    trainType: document.getElementById('ltt').value,
+    rounds: parseInt(document.getElementById('lrn').value) || 0,
+    notes: document.getElementById('lnotes').value.trim(),
+    weight: parseFloat(document.getElementById('lwg').value) || null,
+    ts: new Date().toISOString()
+  };
+  const logs = getLogs(); logs.unshift(e); setLogs(logs);
+  document.getElementById('lnotes').value = '';
+  renderLogs();
+  toast('Treino registrado!');
+}
+
+function exportJSON() {
+  const logs = getLogs();
+  if (!logs.length) { toast('Nenhum registro ainda.'); return; }
+  const b = new Blob([JSON.stringify({ project: 'Camp Metalico', exported: new Date().toISOString(), entries: logs }, null, 2)],
+    { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = 'camp_metalico_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('JSON exportado!');
+}
+
+function clearLogs() {
+  if (!confirm('Limpar todo o historico de treinos?')) return;
+  localStorage.removeItem('camp_logs'); renderLogs(); toast('Historico limpo.');
+}
+
+const TL = { tecnico:'Tecnico', fisico:'Fisico', ambos:'Ambos', sparring:'Sparring' };
+const WL = { normal:'Normal', choque:'Choque' };
+
+function renderLogs() {
+  const logs = getLogs(), el = document.getElementById('lhist');
+  if (!logs.length) { el.innerHTML = '<div class="empty">Nenhum registro. Vai treinar!</div>'; return; }
+  el.innerHTML = logs.map(l =>
+    '<div class="lentry">' +
+    '<div class="ledate">' + l.date + '</div>' +
+    '<div class="letype">' + (WL[l.weekType]||l.weekType) + ' &bull; ' + (TL[l.trainType]||l.trainType) + ' &bull; ' + l.rounds + ' rounds</div>' +
+    (l.weight ? '<div style="font-size:.72rem;color:var(--txt2)">Peso: ' + l.weight + ' kg</div>' : '') +
+    (l.notes ? '<div style="margin-top:4px;font-size:.78rem">' + l.notes.replace(/</g,'&lt;') + '</div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+// ── INIT
+document.getElementById('ld').value = new Date().toISOString().slice(0,10);
+draw();
+renderLogs();
+
+// ── SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('[SW] registrado'))
+    .catch(e => console.warn('[SW]', e));
+}
+</script>
+</body>
+</html>
