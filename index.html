@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#ff0000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Camp Met&#225;lico</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#000;--c:#161616;--c2:#1e1e1e;--c3:#262626;
+  --acc:#ff0000;--txt:#fff;--t2:#b3b3b3;--t3:#555;
+  --grn:#00e676;--blu:#4fc3f7;--yel:#ffea00;--org:#ff9800;
+  --r:14px;--gap:14px
+}
+html,body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+
+/* ── HEADER ── */
+header{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;
+  background:#040000;border-bottom:1.5px solid #330000;
+  display:flex;align-items:center;padding:0 16px;gap:12px}
+header .ico{font-size:1.5rem;flex-shrink:0}
+.htxt h1{font-size:1.1rem;font-weight:900;letter-spacing:2.5px;color:var(--acc);
+  text-shadow:0 0 22px rgba(255,0,0,.55)}
+.htxt .sub{font-size:.57rem;color:var(--t2);letter-spacing:1.5px;text-transform:uppercase}
+
+/* ── MAIN NAV ── */
+nav.main-nav{position:fixed;top:52px;left:0;right:0;z-index:300;
+  background:#060000;border-bottom:1px solid #1a0000;display:flex;height:48px}
+nav.main-nav button{flex:1;height:48px;border:none;background:transparent;color:var(--t2);
+  font-size:.6rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  cursor:pointer;border-bottom:2.5px solid transparent;transition:.2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+nav.main-nav button .ni{font-size:.9rem;line-height:1}
+nav.main-nav button.active{color:var(--acc);border-bottom-color:var(--acc);background:rgba(255,0,0,.05)}
+
+/* ── CONTENT ── */
+.content{margin-top:100px}
+.tab{display:none;padding:16px 14px 40px}
+.tab.active{display:block}
+
+/* ── REST PULSE ── */
+@keyframes rpulse{0%,100%{background:#000}50%{background:rgba(180,0,0,.1)}}
+.rest-bg{animation:rpulse 1.5s ease-in-out infinite}
+
+/* ── SECTION TITLE ── */
+.sh{font-size:.88rem;font-weight:900;color:var(--acc);letter-spacing:2px;
+  text-transform:uppercase;border-bottom:1.5px solid #1e0000;
+  padding-bottom:10px;margin-bottom:16px}
+
+/* ── BLOCK LABEL (inside accordions) ── */
+.blk-lbl{font-size:.7rem;font-weight:800;color:var(--org);text-transform:uppercase;
+  letter-spacing:1.2px;padding:0 0 0 10px;border-left:2.5px solid var(--org);
+  margin:18px 0 10px;line-height:1.2}
+.blk-lbl:first-child{margin-top:0}
+.blk-sub{font-weight:400;color:var(--t2);font-size:.65rem;letter-spacing:0;
+  display:block;margin-top:2px;text-transform:none}
+
+/* ── ACCORDION ── */
+.acc-item{margin-bottom:10px}
+.acc-hdr{width:100%;display:flex;align-items:center;gap:13px;padding:16px 18px;
+  background:var(--c);border:1px solid #2a0000;border-radius:var(--r);
+  color:var(--txt);cursor:pointer;transition:background .2s,border-color .2s;
+  text-align:left;-webkit-tap-highlight-color:transparent}
+.acc-hdr:active{background:var(--c2)}
+.acc-item.open .acc-hdr{border-radius:var(--r) var(--r) 0 0;border-color:rgba(255,0,0,.45)}
+.acc-icon{font-size:.58rem;font-weight:800;color:var(--acc);
+  letter-spacing:.8px;white-space:nowrap;flex-shrink:0;
+  border:1px solid rgba(255,0,0,.3);border-radius:4px;
+  padding:3px 7px;background:rgba(255,0,0,.06)}
+.acc-lbl{flex:1;min-width:0}
+.acc-lbl strong{font-size:.84rem;font-weight:700;letter-spacing:.2px;display:block}
+.acc-lbl span{font-size:.62rem;color:var(--t2);font-weight:400;margin-top:2px;display:block}
+.acc-body{display:none;
+  background:#0b0b0b;border:1px solid #2a0000;border-top:none;
+  border-radius:0 0 var(--r) var(--r)}
+.acc-item.open .acc-body{display:block}
+.acc-pad{padding:18px 16px}
+
+/* ── DAY SUB-NAV ── */
+nav.day-nav{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+  margin-bottom:16px;padding:2px 0;background:transparent;border:none;
+  height:auto;position:static}
+nav.day-nav::-webkit-scrollbar{display:none}
+.day-btn{flex-shrink:0;padding:7px 15px;border-radius:20px;
+  border:1px solid #242424;background:var(--c);
+  color:var(--t2);font-size:.67rem;font-weight:800;
+  letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.day-btn.active{background:var(--acc);border-color:var(--acc);color:#fff;
+  box-shadow:0 0 14px rgba(255,0,0,.3)}
+.day-pane{display:none}
+.day-pane.active{display:block}
+
+/* ── SESSION BLOCKS (Tab 2) ── */
+.sess-block{background:var(--c);border-radius:var(--r);padding:18px 16px;
+  margin-bottom:10px;border:1px solid #1e1e1e}
+.sess-meta{display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap}
+.s-tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.59rem;
+  font-weight:700;letter-spacing:.5px;text-transform:uppercase;flex-shrink:0}
+.s-tag.c{background:rgba(255,152,0,.12);color:#ffcc80;border:1px solid rgba(255,152,0,.35)}
+.s-tag.f{background:rgba(255,0,0,.1);color:#ff8a80;border:1px solid rgba(255,0,0,.3)}
+.s-tag.t{background:rgba(79,195,247,.1);color:var(--blu);border:1px solid rgba(79,195,247,.3)}
+.s-tag.r{background:rgba(0,230,118,.1);color:var(--grn);border:1px solid rgba(0,230,118,.3)}
+.s-tag.s{background:rgba(255,234,0,.08);color:var(--yel);border:1px solid rgba(255,234,0,.25)}
+.sess-time{font-size:.63rem;color:var(--t3);letter-spacing:.3px}
+.sess-title{font-size:.9rem;font-weight:800;color:var(--txt);margin-bottom:10px}
+.sess-list{list-style:none;padding:0}
+.sess-list li{font-size:.75rem;color:var(--t2);padding:4px 0 4px 14px;
+  position:relative;line-height:1.55}
+.sess-list li::before{content:'&#x25B8;';position:absolute;left:0;
+  color:var(--acc);font-size:.6rem;top:6px}
+
+/* ── TABLES ── */
+.tscroll{overflow-x:auto;border-radius:var(--r);margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:.75rem;min-width:260px}
+thead{background:linear-gradient(135deg,#1c0000,#0a0000)}
+thead th{padding:9px 10px;text-align:left;font-size:.6rem;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--acc);border-bottom:1.5px solid #2a0000}
+tbody tr{border-bottom:1px solid #161616;transition:background .12s}
+tbody tr:hover{background:rgba(255,0,0,.025)}
+td{padding:8px 10px;vertical-align:middle;color:var(--t2);font-size:.73rem}
+td strong{color:var(--txt);font-weight:600}
+td small{display:block;font-size:.63rem;margin-top:1px;color:var(--t3)}
+
+/* ── BADGES ── */
+.bk{display:inline-block;padding:2px 7px;border-radius:20px;
+  font-size:.57rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.bt{background:rgba(0,230,118,.1);color:var(--grn);border:1px solid rgba(0,230,118,.28)}
+.bv{background:rgba(79,195,247,.1);color:var(--blu);border:1px solid rgba(79,195,247,.28)}
+.bp{background:rgba(255,0,0,.1);color:#ff7070;border:1px solid rgba(255,0,0,.28)}
+.bn5{background:rgba(255,0,0,.12);color:#ff8a80}
+.bn4{background:rgba(255,152,0,.12);color:#ffcc80}
+.bn3{background:rgba(255,235,59,.12);color:#fff176}
+.bn2{background:rgba(100,221,23,.12);color:#b9f6ca}
+.bn1{background:rgba(79,195,247,.12);color:#b3e5fc}
+
+/* ── COMBINATION CARDS ── */
+.cgrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ccard{background:var(--c2);border-radius:var(--r);padding:14px 12px;border:1px solid #222}
+.cid{font-size:.58rem;font-weight:700;color:var(--acc);letter-spacing:1.2px;margin-bottom:3px}
+.cname{font-size:.74rem;font-weight:700;color:var(--txt);margin-bottom:5px}
+.cseq{font-size:.88rem;font-weight:900;color:var(--yel);letter-spacing:1.2px;margin-bottom:5px;line-height:1.3}
+.cdesc{font-size:.62rem;color:var(--t2);line-height:1.45}
+
+/* ── CERVICAL GRID ── */
+.cervgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cerv{background:var(--c2);border-radius:var(--r);padding:13px 10px;
+  text-align:center;border:1px solid #1e1e1e}
+.cerv .ico{font-size:1.4rem;margin-bottom:5px;display:block}
+.cerv .nm{font-size:.67rem;font-weight:700;color:var(--txt);margin-bottom:2px}
+.cerv .dt{font-size:.59rem;color:var(--t2)}
+
+/* ── NOTE ── */
+.note{font-size:.71rem;color:var(--t2);line-height:1.65;margin-bottom:12px}
+.note strong{color:var(--acc)}
+
+/* ── DIVIDER ── */
+.dvd{height:1px;background:#161616;margin:18px 0}
+
+/* ── TIMER ── */
+.tctr{max-width:400px;margin:0 auto;text-align:center}
+.wstatus{background:var(--c);border-radius:var(--r);padding:12px 16px;
+  margin-bottom:14px;border:1px solid #220000}
+.wsl{font-size:.58rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.wsv{font-size:.87rem;font-weight:700;color:var(--acc)}
+.togtray{display:flex;gap:8px;margin-bottom:14px}
+.togbtn{flex:1;padding:11px 6px;border-radius:var(--r);border:1px solid #222;
+  background:var(--c);color:var(--t2);font-size:.66rem;font-weight:700;
+  cursor:pointer;transition:.2s;letter-spacing:.2px;line-height:1.4}
+.togbtn.on{border-color:var(--acc);color:var(--acc);background:rgba(255,0,0,.07)}
+.togbtn.metro.on{border-color:var(--yel);color:var(--yel);background:rgba(255,234,0,.06)}
+.rinfo{font-size:.9rem;font-weight:700;color:var(--t2);margin-bottom:11px}
+.rinfo span{color:var(--yel);font-size:1.2rem;font-weight:900}
+.rdots{display:flex;justify-content:center;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.rdot{width:10px;height:10px;border-radius:50%;background:var(--c2);
+  border:2px solid #2a2a2a;transition:.25s}
+.rdot.done{background:var(--grn);border-color:var(--grn)}
+.rdot.cur{background:var(--acc);border-color:var(--acc);transform:scale(1.45)}
+.twrap{position:relative;margin:0 auto 16px;width:220px;height:220px}
+.tsvg{width:220px;height:220px;transform:rotate(-90deg)}
+.tbg{fill:none;stroke:#181818;stroke-width:12}
+.tprog{fill:none;stroke:var(--acc);stroke-width:12;stroke-linecap:round;
+  transition:stroke-dashoffset 1s linear,stroke .3s}
+.tprog.rest{stroke:var(--blu)}
+.tinner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ttime{font-size:2.9rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1;color:var(--txt)}
+.tph{font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:5px;color:var(--acc)}
+.tph.rest{color:var(--blu)}
+.tctrl{display:flex;gap:9px;justify-content:center;margin-bottom:14px}
+.blg{border-radius:var(--r);border:none;font-weight:800;text-transform:uppercase;
+  cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent;padding:17px 0}
+.blg:active{transform:scale(.93)}
+.bstart{background:var(--acc);color:#fff;flex:2;font-size:.88rem;letter-spacing:.3px;
+  box-shadow:0 4px 20px rgba(255,0,0,.25)}
+.breset{background:var(--c);color:var(--t2);flex:1;font-size:.74rem;border:1px solid #222}
+.bskip{background:var(--c);color:var(--yel);flex:1;font-size:.74rem;border:1px solid #222}
+.pinfo{background:var(--c);border-radius:var(--r);padding:13px 16px;text-align:left;border:1px solid #1e1e1e}
+.pil{font-size:.57rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.piv{font-size:.78rem;font-weight:600;color:var(--acc);line-height:1.5}
+
+/* ── LOG ── */
+.lform{background:var(--c);border-radius:var(--r);padding:18px;margin-bottom:12px;border:1px solid #1e1e1e}
+.lform label{display:block;font-size:.59rem;font-weight:700;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.lform input,.lform select,.lform textarea{width:100%;padding:11px 13px;
+  border-radius:10px;border:1px solid #252525;background:var(--c2);color:var(--txt);
+  font-size:.84rem;margin-bottom:12px;appearance:none;-webkit-appearance:none}
+.lform textarea{min-height:66px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bexp{width:100%;padding:16px;border-radius:var(--r);border:none;font-size:.86rem;
+  font-weight:800;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;
+  margin-bottom:9px;transition:.18s}
+.bexp:active{opacity:.8;transform:scale(.97)}
+.bexp.main{background:var(--acc);color:#fff;box-shadow:0 4px 18px rgba(255,0,0,.22)}
+.bexp.sec{background:#0c1e3a;color:#90caf9;border:1px solid #1d3f6e}
+.bclr{width:100%;padding:12px;border-radius:var(--r);border:1px solid #222;
+  background:transparent;color:var(--t2);font-size:.77rem;font-weight:700;cursor:pointer;margin-bottom:18px}
+.lhist{background:var(--c);border-radius:var(--r);padding:14px;
+  max-height:300px;overflow-y:auto;border:1px solid #1e1e1e}
+.lentry{border-bottom:1px solid #1a1a1a;padding:10px 0}
+.lentry:last-child{border-bottom:none}
+.le-d{color:var(--acc);font-weight:700;font-size:.69rem;margin-bottom:2px}
+.le-m{color:var(--yel);font-size:.65rem;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.le-t{font-size:.69rem;color:#ff7070;margin-bottom:2px}
+.le-n{font-size:.74rem;color:var(--txt);margin-bottom:2px;line-height:1.45}
+.le-f{font-size:.66rem;color:#ff6b6b}
+.empty{color:var(--t2);text-align:center;padding:22px;font-size:.8rem}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:16px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--c);color:var(--txt);padding:10px 22px;border-radius:30px;
+  font-size:.79rem;font-weight:600;border:1px solid var(--acc);
+  transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+  z-index:999;white-space:nowrap;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="ico">&#x1F94A;</span>
+  <div class="htxt">
+    <h1>CAMP MET&#193;LICO</h1>
+    <div class="sub">Top 10 Nacional &bull; PWA Offline v2</div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <button class="active" onclick="showTab('treinos',this)">
+    <span class="ni">&#x1F3CB;</span>Treinos
+  </button>
+  <button onclick="showTab('semana',this)">
+    <span class="ni">&#x1F4C5;</span>Semana
+  </button>
+  <button onclick="showTab('timer',this)">
+    <span class="ni">&#x23F1;</span>Timer
+  </button>
+  <button onclick="showTab('log',this)">
+    <span class="ni">&#x1F4DD;</span>Log
+  </button>
+</nav>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════
+     ABA 1 — TREINOS DI&#193;RIOS (Accordions)
+═══════════════════════════════════════════════════ -->
+<div id="tab-treinos" class="tab active">
+
+  <!-- ── ACCORDION 1: PREPARA&#199;&#195;O F&#205;SICA ── -->
+  <div class="acc-item" id="acc-fisica">
+    <button class="acc-hdr" onclick="toggleAcc('acc-fisica')">
+      <span class="acc-icon">[ EXPANDIR ]</span>
+      <span class="acc-lbl">
+        <strong>Prepara&#231;&#227;o F&#237;sica</strong>
+        <span>Blocos 1&#8211;5 &bull; Polias e Halteres &bull; Academia do Pr&#233;dio</span>
+      </span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-pad">
+
+        <div class="blk-lbl">Bloco 1 &mdash; Pot&#234;ncia Neural</div>
+        <div class="tscroll"><table>
+          <thead><tr><th>#</th><th>Exerc&#237;cio</th><th>S&#233;ries</th><th>Pausa</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td><strong>DB Hang Power Clean</strong><small>Puxada explosiva do quadril</small></td>
+              <td>4&#215;4</td><td>90s</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td><strong>Salto no Banco + Agachamento</strong><small>Salto m&#225;ximo, absor&#231;&#227;o controlada</small></td>
+              <td>4&#215;5</td><td>75s</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td><strong>Cable Jump Squat</strong><small>Polia baixa, explos&#227;o vertical m&#225;xima</small></td>
+              <td>4&#215;6</td><td>60s</td>
+            </tr>
+          </tbody>
+        </table></div>
+
+        <div class="blk-lbl">Bloco 2 &mdash; Explos&#227;o Rotacional</div>
+        <div class="tscroll"><table>
+          <thead><tr><th>#</th><th>Exerc&#237;cio</th><th>S&#233;ries</th><th>Pausa</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td><strong>Cable Chop Diagonal</strong><small>Polia alta &#x2192; baixa, rota&#231;&#227;o de tronco</small></td>
+              <td>3&#215;10/lado</td><td>45s</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td><strong>Cable Rotational Row</strong><small>Puxada rotacional unilateral</small></td>
+              <td>3&#215;10/lado</td><td>45s</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td><strong>DB Rotational Press</strong><small>Giro de tronco + press</small></td>
+              <td>3&#215;8</td><td>40s</td>
+            </tr>
+          </tbody>
+        </table></div>
+
+        <div class="blk-lbl">Bloco 3 &mdash; Ombros e Tr&#237;ceps</div>
+        <div class="tscroll"><table>
+          <thead><tr><th>#</th><th>Exerc&#237;cio</th><th>S&#233;ries</th><th>Pausa</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>1</strong></td>
+              <td><strong>Cable Lateral Raise</strong><small>Polia baixa, eleva&#231;&#227;o lateral</small></td>
+              <td>4&#215;12</td><td>30s</td>
+            </tr>
+            <tr>
+              <td><strong>2</strong></td>
+              <td><strong>Cable Face Pull</strong><small>Polia alta, deltoides posterior</small></td>
+              <td>3&#215;15</td><td>30s</td>
+            </tr>
+            <tr>
+              <td><strong>3</strong></td>
+              <td><strong>Cable Tricep Pushdown</strong><small>Corda, extens&#227;o de cotovelo</small></td>
+              <td>4&#215;12</td><td>30s</td>
+            </tr>
+            <tr>
+              <td><strong>4</strong></td>
+              <td><strong>DB Overhead Tricep Ext.</strong><small>Cabe&#231;a longa, unilateral</small></td>
+              <td>3&#215;10</td><td>30s</td>
+            </tr>
+          </tbody>
+        </table></div>
+
+        <div class="blk-lbl">
+          Bloco 4 &mdash; Complex L&#225;tico Extremo
+          <span class="blk-sub">Demanda neural decrescente &#x2193;</span>
+        </div>
+        <div class="tscroll"><table>
+          <thead><tr><th>#</th><th>Exerc&#237;cio</th><th>Neural</th><th>Vol</th><th>Pausa</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1</strong></td><td><strong>DB Power Clean</strong></td><td><span class="bk bn5">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td><td>4&#215;3</td><td>90s</td></tr>
+            <tr><td><strong>2</strong></td><td><strong>Box Jump</strong></td><td><span class="bk bn5">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td><td>4&#215;5</td><td>75s</td></tr>
+            <tr><td><strong>3</strong></td><td><strong>DB Thruster</strong></td><td><span class="bk bn4">&#9733;&#9733;&#9733;&#9733;</span></td><td>3&#215;6</td><td>60s</td></tr>
+            <tr><td><strong>4</strong></td><td><strong>DB Terra Romeno</strong></td><td><span class="bk bn4">&#9733;&#9733;&#9733;&#9733;</span></td><td>3&#215;8</td><td>60s</td></tr>
+            <tr><td><strong>5</strong></td><td><strong>Cable Row Explosivo</strong></td><td><span class="bk bn3">&#9733;&#9733;&#9733;</span></td><td>3&#215;8</td><td>45s</td></tr>
+            <tr><td><strong>6</strong></td><td><strong>DB Swing</strong></td><td><span class="bk bn3">&#9733;&#9733;&#9733;</span></td><td>3&#215;15</td><td>45s</td></tr>
+            <tr><td><strong>7</strong></td><td><strong>Farmer&#x2019;s Carry</strong></td><td><span class="bk bn2">&#9733;&#9733;</span></td><td>4&#215;20m</td><td>30s</td></tr>
+            <tr><td><strong>8</strong></td><td><strong>Sombra R&#225;pida</strong></td><td><span class="bk bn1">&#9733;</span></td><td>4&#215;20s</td><td>20s</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="blk-lbl">Bloco 5 &mdash; Protocolo Cervical Isom&#233;trico</div>
+        <p class="note"><strong>6 segundos</strong> cada &bull; 3 s&#233;ries &bull; Sem peso &bull; Sem dor &bull; Resist&#234;ncia manual apenas</p>
+        <div class="cervgrid">
+          <div class="cerv"><span class="ico">&#x2B07;</span><div class="nm">Flex&#227;o Frontal</div><div class="dt">M&#227;o na testa</div></div>
+          <div class="cerv"><span class="ico">&#x2B06;</span><div class="nm">Extens&#227;o</div><div class="dt">M&#227;o na nuca</div></div>
+          <div class="cerv"><span class="ico">&#x2B05;</span><div class="nm">Flex. Lat. Esq.</div><div class="dt">M&#227;o na t&#234;mpora esq.</div></div>
+          <div class="cerv"><span class="ico">&#x27A1;</span><div class="nm">Flex. Lat. Dir.</div><div class="dt">M&#227;o na t&#234;mpora dir.</div></div>
+          <div class="cerv"><span class="ico">&#x21AA;</span><div class="nm">Rota&#231;&#227;o Esq.</div><div class="dt">M&#227;o no queixo</div></div>
+          <div class="cerv"><span class="ico">&#x21A9;</span><div class="nm">Rota&#231;&#227;o Dir.</div><div class="dt">M&#227;o no queixo</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACCORDION 2: COMBINA&#199;&#213;ES ── -->
+  <div class="acc-item" id="acc-combos">
+    <button class="acc-hdr" onclick="toggleAcc('acc-combos')">
+      <span class="acc-icon">[ EXPANDIR ]</span>
+      <span class="acc-lbl">
+        <strong>Combina&#231;&#245;es de Ataque</strong>
+        <span>CC-1 a CC-4 &bull; NA-1 a NA-3 &bull; SP-1</span>
+      </span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-pad">
+        <div class="cgrid2">
+          <div class="ccard">
+            <div class="cid">CC-1</div>
+            <div class="cname">Cubana Base</div>
+            <div class="cseq">1 &#x2192; 2 &#x2192; 3 &#x2192; 2</div>
+            <div class="cdesc">Jab &rarr; Direto &rarr; Gancho &rarr; Cruzado</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">CC-2</div>
+            <div class="cname">Cubana Volume</div>
+            <div class="cseq">1&#x2192;1&#x2192;2&#x2192;4a&#x2192;3</div>
+            <div class="cdesc">Duplo Jab &rarr; Direto &rarr; Upper Esq &rarr; Gancho</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">CC-3</div>
+            <div class="cname">Cubana Sa&#237;da</div>
+            <div class="cseq">1&#x2192;2&#x2192;SL&#x2192;2&#x2192;3</div>
+            <div class="cdesc">Jab &rarr; Direto &rarr; Slip Esq &rarr; Direto &rarr; Gancho</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">CC-4</div>
+            <div class="cname">Cubana Lateral</div>
+            <div class="cseq">1&#x2192;2&#x2192;L&#x2192;F&#237;g&#x2192;4b</div>
+            <div class="cdesc">Jab &rarr; Direto &rarr; Sa&#237;da Lat &rarr; Gancho F&#237;gado &rarr; Upper Dir</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">NA-1</div>
+            <div class="cname">Norte-Americana Infight</div>
+            <div class="cseq">1&#x2192;2&#x2192;3&#x2192;4b&#x2192;2</div>
+            <div class="cdesc">Jab &rarr; Cruzado &rarr; Gancho &rarr; Upper Dir &rarr; Cruzado</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">NA-2</div>
+            <div class="cname">Norte-Americana Slip</div>
+            <div class="cseq">1&#x2192;2&#x2192;SR&#x2192;2&#x2192;3</div>
+            <div class="cdesc">Jab &rarr; Direto &rarr; Slip Dir &rarr; Cruzado &rarr; Gancho</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">NA-3</div>
+            <div class="cname">Norte-Americana Passo</div>
+            <div class="cseq">1&#x2192;2&#x2192;PD&#x2192;2&#x2192;3</div>
+            <div class="cdesc">Jab &rarr; Cruzado &rarr; Passo Dir &rarr; Cruzado &rarr; Gancho</div>
+          </div>
+          <div class="ccard">
+            <div class="cid">SP-1</div>
+            <div class="cname">Sparring Infight</div>
+            <div class="cseq">Cl&#x2192;4a&#x2192;4b&#x2192;L+1</div>
+            <div class="cdesc">Cl&#237;nch &rarr; Upper Esq &rarr; Upper Dir &rarr; Sa&#237;da + Jab</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACCORDION 3: CRONOGRAMA T&#201;CNICO ── -->
+  <div class="acc-item" id="acc-tecnico">
+    <button class="acc-hdr" onclick="toggleAcc('acc-tecnico')">
+      <span class="acc-icon">[ EXPANDIR ]</span>
+      <span class="acc-lbl">
+        <strong>Cronograma T&#233;cnico</strong>
+        <span>17h00 &#8211; 19h00 &bull; 120 min &bull; 40 ciclos T&#x2192;V&#x2192;Press&#227;o</span>
+      </span>
+    </button>
+    <div class="acc-body">
+      <div class="acc-pad">
+        <p class="note">
+          <strong>T&#233;cnico</strong> (1&#186; min) &rarr; <strong style="color:var(--blu)">Volume</strong> (2&#186; min) &rarr; <strong style="color:#ff7070">Press&#227;o/Temporalgia</strong> (3&#186; min)
+        </p>
+        <div class="tscroll"><table>
+          <thead><tr>
+            <th style="width:40px">Min</th>
+            <th style="width:58px">Hora</th>
+            <th style="width:96px">Fase</th>
+            <th>Foco</th>
+          </tr></thead>
+          <tbody id="tbdy"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ABA 2 — PROGRAMA&#199;&#195;O SEMANAL (Sub-abas por dia)
+═══════════════════════════════════════════════════ -->
+<div id="tab-semana" class="tab">
+  <div class="sh">Programa&#231;&#227;o Semanal</div>
+
+  <nav class="day-nav">
+    <button class="day-btn active" onclick="showDay('seg',this)">SEG</button>
+    <button class="day-btn" onclick="showDay('ter',this)">TER</button>
+    <button class="day-btn" onclick="showDay('qua',this)">QUA</button>
+    <button class="day-btn" onclick="showDay('qui',this)">QUI</button>
+    <button class="day-btn" onclick="showDay('sex',this)">SEX</button>
+    <button class="day-btn" onclick="showDay('sab',this)">S&#193;B</button>
+  </nav>
+
+  <!-- SEGUNDA -->
+  <div class="day-pane active" id="day-seg">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag c">Cardio</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Fartlek 30 min</div>
+      <ul class="sess-list">
+        <li>5 min aquecimento leve</li>
+        <li>10&#215; (1&#8217; sprint m&#225;ximo / 1&#8217; trote leve)</li>
+        <li>5 min desaquecimento</li>
+        <li>Total: 30 min cont&#237;nuos</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag t">T&#233;cnico</span>
+        <span class="sess-time">17h00 &#8211; 19h00</span>
+      </div>
+      <div class="sess-title">Base Sovi&#233;tica + Cubana</div>
+      <ul class="sess-list">
+        <li>CC-1: Jab &rarr; Direto &rarr; Gancho &rarr; Cruzado</li>
+        <li>CC-2: Duplo Jab &rarr; Direto &rarr; Upper &rarr; Gancho</li>
+        <li>Guarda alta sovi&#233;tica como posi&#231;&#227;o base</li>
+        <li>40 ciclos T&#233;cnico &rarr; Volume &rarr; Press&#227;o/Temporalgia</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- TER&#199;A -->
+  <div class="day-pane" id="day-ter">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag f">F&#237;sico</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Blocos 1, 2 e 5 &mdash; Pot&#234;ncia e Explos&#227;o</div>
+      <ul class="sess-list">
+        <li>DB Hang Power Clean + Salto no Banco (Bloco 1)</li>
+        <li>Cable Chop + Rotational Row + DB Press (Bloco 2)</li>
+        <li>Protocolo Cervical Isom&#233;trico (Bloco 5)</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag t">T&#233;cnico</span>
+        <span class="sess-time">17h00 &#8211; 19h00</span>
+      </div>
+      <div class="sess-title">Saco Pesado + Manopla Avan&#231;ada</div>
+      <ul class="sess-list">
+        <li>CC-3, CC-4 no saco pesado</li>
+        <li>Manopla em velocidade avan&#231;ada</li>
+        <li>&#202;nfase em volume de golpes e ritmo</li>
+        <li>40 ciclos T&#233;cnico &rarr; Volume &rarr; Press&#227;o</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- QUARTA -->
+  <div class="day-pane" id="day-qua">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag c">Cardio</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">8 Tiros em Ladeira</div>
+      <ul class="sess-list">
+        <li>8 &#215; 45s em intensidade m&#225;xima</li>
+        <li>90s descanso completo entre tiros</li>
+        <li>Ladeira ou esteira inclinada (8&#8211;12%)</li>
+        <li>Sem redu&#231;&#227;o de intensidade nos tiros</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag t">T&#233;cnico</span>
+        <span class="sess-time">17h00 &#8211; 19h00</span>
+      </div>
+      <div class="sess-title">Sparring Situacional / Infight Norte-Americano</div>
+      <ul class="sess-list">
+        <li>NA-1, SP-1 em sparring situacional</li>
+        <li>Dist&#226;ncia curta, cl&#237;nch e sa&#237;da</li>
+        <li>Press&#227;o no canto e defesa de cl&#237;nch</li>
+        <li>Contra-ataque ap&#243;s slip e roll</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- QUINTA -->
+  <div class="day-pane" id="day-qui">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag f">F&#237;sico</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Blocos 3 e 4 &mdash; Ombros e Complex L&#225;tico</div>
+      <ul class="sess-list">
+        <li>Cable Lateral Raise + Face Pull + Tricep (Bloco 3)</li>
+        <li>Complex L&#225;tico Extremo em 8 esta&#231;&#245;es (Bloco 4)</li>
+        <li>Neural decrescente: DB Clean &#x2192; Sombra R&#225;pida</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag t">T&#233;cnico</span>
+        <span class="sess-time">17h00 &#8211; 19h00</span>
+      </div>
+      <div class="sess-title">Sombra Met&#243;dica + Escola de Combate</div>
+      <ul class="sess-list">
+        <li>NA-2, NA-3 na sombra frente ao espelho</li>
+        <li>Corre&#231;&#227;o postural e eixo de rota&#231;&#227;o</li>
+        <li>Drills de esquiva: slip, roll, block</li>
+        <li>40 ciclos T&#233;cnico &rarr; Volume &rarr; Press&#227;o</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SEXTA -->
+  <div class="day-pane" id="day-sex">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag r">Regenerativo</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Corrida Regenerativa 45 min</div>
+      <ul class="sess-list">
+        <li>RPE 5&#8211;6, ritmo convers&#225;vel e constante</li>
+        <li>Respira&#231;&#227;o nasal obrigat&#243;ria durante todo o percurso</li>
+        <li>Foco exclusivo em expans&#227;o da base aer&#243;bica</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag t">T&#233;cnico</span>
+        <span class="sess-time">17h00 &#8211; 19h00</span>
+      </div>
+      <div class="sess-title">Round de S&#237;ntese Geral + Volta &#224; Calma</div>
+      <ul class="sess-list">
+        <li>Todas as combina&#231;&#245;es: CC-1&#8594;4 e NA-1&#8594;3</li>
+        <li>Revis&#227;o t&#225;tica da semana</li>
+        <li>Volta &#224; calma expandida (20 min de alongamento)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- S&#193;BADO -->
+  <div class="day-pane" id="day-sab">
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag c">Roadwork</span>
+        <span class="sess-time">Manh&#227; / Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Corrida de Resist&#234;ncia Mental 60 min</div>
+      <ul class="sess-list">
+        <li>60 min de corrida cont&#237;nua de estrada</li>
+        <li>Varia&#231;&#245;es de terreno e ritmo livre</li>
+        <li>Foco em fortitude mental e base aer&#243;bica</li>
+      </ul>
+    </div>
+    <div class="sess-block">
+      <div class="sess-meta">
+        <span class="s-tag s">T&#225;tico</span>
+        <span class="sess-time">Flex&#237;vel</span>
+      </div>
+      <div class="sess-title">Revis&#227;o T&#225;tica + Sparring de Combina&#231;&#227;o</div>
+      <ul class="sess-list">
+        <li>Sparring leve com combina&#231;&#245;es da semana</li>
+        <li>Revis&#227;o de v&#237;deo e autocorre&#231;&#227;o</li>
+        <li>Prepara&#231;&#227;o t&#225;tica para a pr&#243;xima semana</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ABA 3 — TIMER DE BOXE
+═══════════════════════════════════════════════════ -->
+<div id="tab-timer" class="tab">
+<div class="tctr">
+
+  <div class="wstatus">
+    <div class="wsl">Semana do Mesociclo (sincronizado com Log)</div>
+    <div class="wsv" id="wsv">Semana 1 &mdash; Adapta&#231;&#227;o &mdash; 4 rounds</div>
+  </div>
+
+  <div class="togtray">
+    <button class="togbtn" id="vbtn" onclick="toggleVoice()">
+      &#x1F3A4; Coach por Voz
+    </button>
+    <button class="togbtn metro" id="mbtn" onclick="toggleMetro()">
+      &#x1F941; Metr&#244;nomo Cubano
+    </button>
+  </div>
+
+  <div class="rinfo">Round <span id="cr">1</span> de <span id="tr">4</span></div>
+  <div class="rdots" id="dots"></div>
+
+  <div class="twrap">
+    <svg class="tsvg" viewBox="0 0 220 220">
+      <circle class="tbg" cx="110" cy="110" r="100"/>
+      <circle class="tprog" id="tcirc" cx="110" cy="110" r="100"/>
+    </svg>
+    <div class="tinner">
+      <div class="ttime" id="tdisp">3:00</div>
+      <div class="tph" id="tph">COMBATE</div>
+    </div>
+  </div>
+
+  <div class="tctrl">
+    <button class="blg breset" onclick="resetT()">&#x21BA; Reset</button>
+    <button class="blg bstart" id="sbtn" onclick="toggleT()">INICIAR COMBATE</button>
+    <button class="blg bskip" onclick="skipP()">Skip &#x23ED;</button>
+  </div>
+
+  <div class="pinfo">
+    <div class="pil">Padr&#227;o do round (3 min)</div>
+    <div class="piv">
+      Min 1: T&#233;cnico &nbsp;&#x2192;&nbsp; Min 2: Volume &nbsp;&#x2192;&nbsp; Min 3: Press&#227;o / Temporalgia
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ABA 4 — LOG DA SESS&#195;O
+═══════════════════════════════════════════════════ -->
+<div id="tab-log" class="tab">
+  <div class="sh">Log da Sess&#227;o</div>
+
+  <div class="lform">
+    <div class="g2">
+      <div>
+        <label>Data</label>
+        <input type="date" id="ld">
+      </div>
+      <div>
+        <label>Semana do Mesociclo</label>
+        <select id="lwk" onchange="onWeekChange(parseInt(this.value))">
+          <option value="1">S1 &mdash; Adapta&#231;&#227;o (4R)</option>
+          <option value="2">S2 &mdash; Desenvolvimento (4R)</option>
+          <option value="3">S3 &mdash; CHOQUE (6R)</option>
+          <option value="4">S4 &mdash; Recupera&#231;&#227;o (4R)</option>
+          <option value="5">S5 &mdash; Pico (4R)</option>
+          <option value="6">S6 &mdash; CHOQUE FINAL (6R)</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div>
+        <label>Rounds Completados</label>
+        <input type="number" id="lrn" min="0" max="8" value="4">
+      </div>
+      <div>
+        <label>RPE (1&#8211;10)</label>
+        <input type="number" id="lrpe" min="1" max="10" placeholder="Ex: 8">
+      </div>
+    </div>
+    <label>Combina&#231;&#227;o Destaque</label>
+    <input type="text" id="lcombo" placeholder="Ex: CC-3 com precis&#227;o no R4">
+    <label>Nota Biom&#234;canica</label>
+    <textarea id="lbio" placeholder="Postura, eixo de rota&#231;&#227;o, guarda, dist&#226;ncia..."></textarea>
+    <div class="g2">
+      <div>
+        <label>Round de Temporalgia</label>
+        <input type="number" id="ltmp" min="1" max="8" placeholder="Round #">
+      </div>
+      <div>
+        <label>Peso Corporal (kg)</label>
+        <input type="number" id="lwg" step="0.1" placeholder="Ex: 72.5">
+      </div>
+    </div>
+    <label>Falhas e Pontos de Melhora</label>
+    <textarea id="lfail" placeholder="Paraprocessamento, falhas t&#233;cnicas, limita&#231;&#245;es..."></textarea>
+  </div>
+
+  <button class="bexp main" onclick="saveLog()">&#x1F4BE; Salvar Registro</button>
+  <button class="bexp sec" onclick="exportJSON()">&#x1F4E4; Exportar JSON</button>
+  <button class="bclr" onclick="clearLogs()">&#x1F5D1; Limpar Hist&#243;rico</button>
+
+  <div class="sh" style="margin-top:4px">Hist&#243;rico Local</div>
+  <div class="lhist" id="lhist"></div>
+</div>
+
+</div><!-- /.content -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// NAVEGA&#199;&#195;O PRINCIPAL
+// ═══════════════════════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav.main-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// ACCORDION
+// ═══════════════════════════════════════════════════
+function toggleAcc(id) {
+  const item = document.getElementById(id);
+  const isOpen = item.classList.toggle('open');
+  const icon = item.querySelector('.acc-icon');
+  if (icon) icon.textContent = isOpen ? '[ RECOLHER ]' : '[ EXPANDIR ]';
+}
+
+// ═══════════════════════════════════════════════════
+// SUB-ABAS DOS DIAS
+// ═══════════════════════════════════════════════════
+function showDay(day, btn) {
+  document.querySelectorAll('.day-pane').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+  });
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  const pane = document.getElementById('day-' + day);
+  pane.classList.add('active');
+  pane.style.display = 'block';
+  btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// AUDIO ENGINE — Web Audio API (100% offline)
+// ═══════════════════════════════════════════════════
+let _actx = null;
+function getACtx() {
+  if (!_actx) _actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (_actx.state === 'suspended') _actx.resume();
+  return _actx;
+}
+
+function playGong() {
+  try {
+    const ctx = getACtx(), t = ctx.currentTime;
+    [[440,0.6,2.5],[880,0.32,2.0],[1320,0.18,1.5],[1760,0.09,1.2]].forEach(([f,amp,dec],i) => {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f * (1 + i * 0.008);
+      g.gain.setValueAtTime(amp, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dec);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t); osc.stop(t + dec + 0.1);
+    });
+    const nb = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.04), ctx.sampleRate);
+    const nd = nb.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(), ng = ctx.createGain();
+    ns.buffer = nb;
+    ng.gain.setValueAtTime(0.3, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    ns.connect(ng); ng.connect(ctx.destination);
+    ns.start(t); ns.stop(t + 0.05);
+  } catch(e) {}
+  if (navigator.vibrate) navigator.vibrate(500);
+}
+
+function playAlert() {
+  try {
+    const ctx = getACtx(), t = ctx.currentTime;
+    for (let i = 0; i < 8; i++) {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.value = 1100 + i * 30;
+      g.gain.setValueAtTime(0.22, t + i * 0.13);
+      g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.13 + 0.08);
+      osc.connect(g); g.connect(ctx.destination);
+      osc.start(t + i * 0.13); osc.stop(t + i * 0.13 + 0.1);
+    }
+  } catch(e) {}
+}
+
+function playClick() {
+  try {
+    const ctx = getACtx();
+    const buf = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * 0.035), ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++)
+      d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.006));
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = buf; g.gain.value = 0.85;
+    src.connect(g); g.connect(ctx.destination); src.start();
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════
+// TTS — COACH POR VOZ (pt-BR)
+// ═══════════════════════════════════════════════════
+let _ptVoice = null;
+if ('speechSynthesis' in window) {
+  const lv = () => {
+    const vs = window.speechSynthesis.getVoices();
+    _ptVoice = vs.find(v => v.lang === 'pt-BR') || vs.find(v => v.lang.startsWith('pt')) || null;
+  };
+  window.speechSynthesis.onvoiceschanged = lv; lv();
+}
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'pt-BR'; u.rate = 0.88; u.pitch = 0.82; u.volume = 1;
+  if (_ptVoice) u.voice = _ptVoice;
+  window.speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════════════════
+// METR&#212;NOMO CUBANO (sincopado / off-beat)
+// ═══════════════════════════════════════════════════
+let metroOn = false, metroTid = null, beatIdx = 0;
+const BEATS = [520,460,600,430,550,480,570,420,610,445,535,495];
+function toggleMetro() {
+  metroOn = !metroOn;
+  const btn = document.getElementById('mbtn');
+  btn.classList.toggle('on', metroOn);
+  if (metroOn) schedClick(); else { clearTimeout(metroTid); metroTid = null; }
+}
+function schedClick() {
+  if (!metroOn) return;
+  playClick();
+  beatIdx = (beatIdx + 1) % BEATS.length;
+  metroTid = setTimeout(schedClick, BEATS[beatIdx]);
+}
+
+// ═══════════════════════════════════════════════════
+// TIMER DE BOXE
+// ═══════════════════════════════════════════════════
+const CIRC = 2 * Math.PI * 100; // r=100
+let week = 1, nR = 4, curR = 1;
+let combat = true, left = 180, running = false, iv = null;
+let voiceOn = false, sp120 = false, sp60 = false;
+const CT = 180, RT = 60;
+
+function weekToRounds(w) { return (w === 3 || w === 6) ? 6 : 4; }
+
+function onWeekChange(w) {
+  week = parseInt(w) || 1;
+  nR = weekToRounds(week);
+  const labels = ['','Adaptação','Desenvolvimento','CHOQUE','Recuperação','Pico','CHOQUE FINAL'];
+  const shock = nR === 6;
+  document.getElementById('wsv').textContent =
+    'Semana ' + week + ' — ' + (labels[week]||'') + ' — ' + nR + ' rounds' + (shock ? ' ⚡' : '');
+  resetT();
+}
+
+function draw() {
+  const m = Math.floor(left / 60), s = left % 60;
+  document.getElementById('tdisp').textContent = m + ':' + String(s).padStart(2, '0');
+  const tot = combat ? CT : RT;
+  const circ = document.getElementById('tcirc');
+  circ.style.strokeDasharray = CIRC;
+  circ.style.strokeDashoffset = CIRC * (1 - left / tot);
+  circ.className = 'tprog' + (combat ? '' : ' rest');
+  const ph = document.getElementById('tph');
+  ph.textContent = combat ? 'COMBATE' : 'DESCANSO';
+  ph.className = 'tph' + (combat ? '' : ' rest');
+  document.getElementById('cr').textContent = curR;
+  document.getElementById('tr').textContent = nR;
+  let h = '';
+  for (let i = 1; i <= nR; i++)
+    h += '<div class="rdot' + (i < curR ? ' done' : i === curR ? ' cur' : '') + '"></div>';
+  document.getElementById('dots').innerHTML = h;
+}
+
+function startRound() {
+  combat = true; left = CT; sp120 = false; sp60 = false;
+  playGong();
+  document.getElementById('tab-timer').classList.remove('rest-bg');
+  if (voiceOn) setTimeout(() => speak('Força e Distância Longa'), 900);
+}
+function startRest() {
+  combat = false; left = RT;
+  playGong();
+  document.getElementById('tab-timer').classList.add('rest-bg');
+}
+
+function tick() {
+  if (!running) return;
+  left--;
+  if (combat && voiceOn) {
+    if (left === 120 && !sp120) { sp120 = true; speak('Volume de Golpes'); }
+    if (left === 60  && !sp60)  { sp60  = true; speak('Técnica e Esquiva'); }
+  }
+  if (combat && left === 10) playAlert();
+  if (left < 0) {
+    if (combat) {
+      if (curR >= nR) {
+        clearInterval(iv); iv = null; running = false; left = 0;
+        playGong();
+        document.getElementById('sbtn').textContent = 'CONCLUÍDO ✓';
+        document.getElementById('tab-timer').classList.remove('rest-bg');
+        toast('Treino concluído! ' + nR + ' rounds.');
+        draw(); return;
+      }
+      startRest();
+    } else { curR++; startRound(); }
+  }
+  draw();
+}
+
+function toggleT() {
+  if (running) {
+    clearInterval(iv); iv = null; running = false;
+    document.getElementById('sbtn').textContent = 'CONTINUAR';
+  } else {
+    getACtx(); // User Gesture — desbloqueia AudioContext
+    const first = (left === CT && curR === 1 && combat);
+    running = true;
+    document.getElementById('sbtn').textContent = 'PAUSAR';
+    if (first) {
+      playGong();
+      if (voiceOn) setTimeout(() => speak('Força e Distância Longa'), 900);
+    }
+    iv = setInterval(tick, 1000);
+  }
+  draw();
+}
+
+function resetT() {
+  clearInterval(iv); iv = null; running = false;
+  combat = true; curR = 1; left = CT; sp120 = false; sp60 = false;
+  document.getElementById('sbtn').textContent = 'INICIAR COMBATE';
+  document.getElementById('tab-timer').classList.remove('rest-bg');
+  draw();
+}
+
+function skipP() { if (!running) toggleT(); left = 0; tick(); }
+
+function toggleVoice() {
+  voiceOn = !voiceOn;
+  const btn = document.getElementById('vbtn');
+  btn.classList.toggle('on', voiceOn);
+  btn.textContent = voiceOn ? '🎤 Coach ATIVO' : '🎤 Coach por Voz';
+}
+
+// ═══════════════════════════════════════════════════
+// TABELA T&#201;CNICA (17h&#8211;19h, gerada por JS)
+// ═══════════════════════════════════════════════════
+(function buildTec() {
+  const F = [
+    { cls:'bt', label:'TÉCNICO',  foco:'Gesto técnico isolado — máxima precisão, zero fadiga' },
+    { cls:'bv', label:'VOLUME',   foco:'Alta repetição — manutenção do padrão motor' },
+    { cls:'bp', label:'PRESSÃO', foco:'Temporalgia — técnica sob pressão e estresse temporal' }
+  ];
+  let h = '';
+  for (let m = 0; m < 120; m++) {
+    const tot = 17 * 60 + m;
+    const hh = String(Math.floor(tot / 60)).padStart(2, '0');
+    const mm = String(tot % 60).padStart(2, '0');
+    const f = F[m % 3];
+    h += '<tr><td>' + (m+1) + '</td>' +
+         '<td style="color:var(--t2)">' + hh + ':' + mm + '</td>' +
+         '<td><span class="bk ' + f.cls + '">' + f.label + '</span></td>' +
+         '<td>' + f.foco + '</td></tr>';
+  }
+  document.getElementById('tbdy').innerHTML = h;
+})();
+
+// ═══════════════════════════════════════════════════
+// LOG — localStorage
+// ═══════════════════════════════════════════════════
+function getLogs() {
+  try { return JSON.parse(localStorage.getItem('camp_logs_v2') || '[]'); }
+  catch { return []; }
+}
+function setLogs(l) { localStorage.setItem('camp_logs_v2', JSON.stringify(l)); }
+
+function saveLog() {
+  const e = {
+    id: Date.now(),
+    date: document.getElementById('ld').value || new Date().toISOString().slice(0,10),
+    week: parseInt(document.getElementById('lwk').value),
+    rounds: parseInt(document.getElementById('lrn').value) || 0,
+    rpe: parseInt(document.getElementById('lrpe').value) || null,
+    combo: document.getElementById('lcombo').value.trim(),
+    bioNote: document.getElementById('lbio').value.trim(),
+    temporalgiaRound: parseInt(document.getElementById('ltmp').value) || null,
+    weight: parseFloat(document.getElementById('lwg').value) || null,
+    failures: document.getElementById('lfail').value.trim(),
+    ts: new Date().toISOString()
+  };
+  const logs = getLogs(); logs.unshift(e); setLogs(logs);
+  ['lbio','lfail','lcombo'].forEach(id => document.getElementById(id).value = '');
+  renderLogs();
+  toast('Sessão registrada!');
+}
+
+function exportJSON() {
+  const logs = getLogs();
+  if (!logs.length) { toast('Nenhum registro ainda.'); return; }
+  const blob = new Blob(
+    [JSON.stringify({project:'Camp Metálico',version:'2.1',exported:new Date().toISOString(),sessions:logs},null,2)],
+    {type:'application/json'}
+  );
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'camp_metalico_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('JSON exportado!');
+}
+
+function clearLogs() {
+  if (!confirm('Apagar todo o histórico local?')) return;
+  localStorage.removeItem('camp_logs_v2'); renderLogs(); toast('Histórico limpo.');
+}
+
+function renderLogs() {
+  const logs = getLogs(), el = document.getElementById('lhist');
+  if (!logs.length) { el.innerHTML = '<div class="empty">Nenhum registro. Vai treinar!</div>'; return; }
+  el.innerHTML = logs.map(l =>
+    '<div class="lentry">' +
+    '<div class="le-d">S' + l.week + ' • ' + l.date + '</div>' +
+    '<div class="le-m">' + l.rounds + ' rounds' + (l.rpe ? ' • RPE ' + l.rpe : '') + (l.combo ? ' • ' + l.combo : '') + '</div>' +
+    (l.temporalgiaRound ? '<div class="le-t">⚡ Temporalgia no R' + l.temporalgiaRound + '</div>' : '') +
+    (l.weight ? '<div style="font-size:.67rem;color:var(--t2)">Peso: ' + l.weight + ' kg</div>' : '') +
+    (l.bioNote ? '<div class="le-n">' + l.bioNote.replace(/</g,'&lt;') + '</div>' : '') +
+    (l.failures ? '<div class="le-f">Falhas: ' + l.failures.replace(/</g,'&lt;') + '</div>' : '') +
+    '</div>'
+  ).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 2800);
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.getElementById('ld').value = new Date().toISOString().slice(0, 10);
+onWeekChange(1);
+draw();
+renderLogs();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./service-worker.js')
+    .then(() => console.log('[SW] ok'))
+    .catch(e => console.warn('[SW]', e));
+}
+</script>
+</body>
+</html>
